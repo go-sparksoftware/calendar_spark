@@ -66,23 +66,63 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
     );
 
     final events = controller.getEvents(calendar);
-    final style = eventStyle(context);
-    final bulletStyle = style.copyWith(
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.secondary);
+    final eventTitleStyle = eventStyle(context);
+    final defaultIndicatorColor = Theme.of(context).colorScheme.primary;
 
-    Widget buildEvent(CalendarEvent event) => Padding(
-          padding: const EdgeInsets.only(top: 4, left: 4),
-          child: Text.rich(
-            TextSpan(
-              style: style,
-              children: [
-                TextSpan(text: "• ", style: bulletStyle),
-                TextSpan(text: event.title),
-              ],
-            ),
-          ),
-        );
+    final track = <CalendarDay>{};
+
+    Widget buildEvent(CalendarEvent event) {
+      final indicatorColor =
+          controller.groups[event.groupId]?.color ?? defaultIndicatorColor;
+
+      bool primary = !track.contains(event.day);
+      track.add(event.day);
+      late String? line1;
+      late List<String> sublines;
+      if (primary) {
+        if (event.header case String header) {
+          line1 = header;
+          sublines = [event.title, ...event.subtitles];
+        } else {
+          line1 = event.title;
+          sublines = [...event.subtitles];
+        }
+      } else {
+        line1 = null;
+        sublines = [
+          if (event.header != null) event.header!,
+          event.title,
+          ...event.subtitles
+        ];
+      }
+
+      return Padding(
+        padding: const EdgeInsets.only(top: 4, left: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (line1 != null)
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 4,
+                    backgroundColor: indicatorColor,
+                  ),
+                  const SizedBox(width: 4),
+                  ...line1
+                      .split(" ")
+                      .map((word) => Text(" $word", style: eventTitleStyle)),
+                ],
+              ),
+            ...sublines.map((line) => Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Text(line, style: eventTitleStyle),
+                )),
+          ],
+        ),
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(border: border),
@@ -100,9 +140,7 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
                 onPressed: null,
                 icon: Text("${calendar.day}")),
           ),
-
           ...events.map(buildEvent),
-          //const Align(alignment: Alignment.topLeft, child: Text("Test item"))
         ],
       ),
     );
@@ -139,8 +177,13 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
     return Container(
       decoration: BoxDecoration(border: border),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        //mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // const Padding(
+          //   padding: EdgeInsets.all(8.0),
+          //   child: Text("Summary"),
+          // ),
           ...summaries.map((summary) => Padding(
                 padding: const EdgeInsets.only(top: 4, left: 4),
                 child: Text(summary, style: style),
@@ -149,26 +192,6 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
         ],
       ),
     );
-
-    // return Container(
-    //   decoration: BoxDecoration(border: border),
-    //   child: Padding(
-    //     padding: const EdgeInsets.all(8.0),
-    //     child: Column(
-    //       spacing: 2,
-    //       children: [
-    //         ...summaries.map((summary) => Text(summary,
-    //             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-    //                 fontWeight: FontWeight.bold,
-    //                 color: Theme.of(context).colorScheme.secondary))),
-    //       ],
-    //     ),
-    //     // child2: Text("some summary",
-    //     //     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-    //     //         fontWeight: FontWeight.bold,
-    //     //         color: Theme.of(context).colorScheme.secondary)),
-    //   ),
-    // );
   }
 
   @override
@@ -189,6 +212,15 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
                 color: theme.colorScheme.secondary)),
       ),
     );
+  }
+
+  @override
+  Widget? buildWeekSummaryTitle(BuildContext context) {
+    return Center(
+        child: Text("SUMMARY",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.secondary)));
   }
 
   @override

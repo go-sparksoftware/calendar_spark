@@ -81,9 +81,9 @@ class MonthCalendar extends StatelessWidget {
                     }),
                     if (showSummary)
                       SizedBox(
-                        width: cellWidth,
-                        height: delegate.headerHeight,
-                      ),
+                          width: cellWidth,
+                          height: delegate.headerHeight,
+                          child: delegate.buildWeekSummaryTitle(context)),
                     ...Iterable.generate(cellCount, (index) {
                       final cell = cellFromIndex(index, columnCount);
 

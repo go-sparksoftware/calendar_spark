@@ -1,8 +1,11 @@
-import 'package:calendar_spark/types/calendar_day.dart' as day;
 import 'package:flutter/material.dart';
 
+import 'calendar_event_group.dart';
 import 'calendar_types.dart';
+import 'types/calendar_day.dart' as day;
 import 'types/calendar_event.dart';
+
+export 'calendar_event_group.dart';
 export 'types/calendar_event.dart';
 
 class CalendarController extends ChangeNotifier {
@@ -16,6 +19,8 @@ class CalendarController extends ChangeNotifier {
     bool navigatorVisible = true,
     CalendarEvents events = const {},
     this.summarize = defaultSummarize,
+    Map<String, AssignedCalendarEventGroup> groups = const {},
+    Set<String> hiddenGroups = const {},
   })  : _primary = initial,
         _secondary = initial,
         _calendarDay = day,
@@ -24,7 +29,9 @@ class CalendarController extends ChangeNotifier {
         _showHeader = showHeader,
         _firstDayOfWeek = firstDayOfWeek,
         _navigatorVisible = navigatorVisible,
-        _events = events;
+        _events = events,
+        _groups = groups,
+        _hiddenGroups = {...hiddenGroups};
   CalendarController.now({
     bool showWeeks = false,
     bool showSummary = false,
@@ -33,6 +40,8 @@ class CalendarController extends ChangeNotifier {
     bool navigatorVisible = true,
     CalendarEvents events = const {},
     this.summarize = defaultSummarize,
+    Map<String, AssignedCalendarEventGroup> groups = const {},
+    Set<String> hiddenGroups = const {},
   })  : _primary = thisMonth(),
         _secondary = thisMonth(),
         _calendarDay = day.today(),
@@ -41,9 +50,27 @@ class CalendarController extends ChangeNotifier {
         _showHeader = showHeader,
         _firstDayOfWeek = firstDayOfWeek,
         _navigatorVisible = navigatorVisible,
-        _events = events;
+        _events = events,
+        _groups = groups,
+        _hiddenGroups = {...hiddenGroups};
 
   final List<String> Function(List<CalendarEvent> events) summarize;
+
+  Map<String, AssignedCalendarEventGroup> _groups;
+  Map<String, AssignedCalendarEventGroup> get groups => _groups;
+  set groups(Map<String, AssignedCalendarEventGroup> value) {
+    if (value == _groups) return;
+    _groups = value;
+    notifyListeners();
+  }
+
+  late Set<String> _hiddenGroups;
+  // Set<String> get hiddenGroups => _hiddenGroups;
+  // set hiddenGroups(Set<String> value) {
+  //   if (value == _hiddenGroups) return;
+  //   _hiddenGroups = value;
+  //   notifyListeners();
+  // }
 
   late CalendarMonth _primary;
   CalendarMonth get primary => _primary;
@@ -141,16 +168,47 @@ class CalendarController extends ChangeNotifier {
     secondary = secondary.add(months: 1);
   }
 
-  List<CalendarEvent> getEvents(CalendarDay day, {CalendarDay? to}) {
+  List<CalendarEvent> getEvents(CalendarDay day,
+      {CalendarDay? to, bool visibleOnly = true}) {
+    late final List<CalendarEvent> events;
     if (to == null) {
-      return _events.entries
+      events = _events.entries
           .where((event) => event.key == day)
           .fold(<CalendarEvent>[], (a, c) => a..addAll(c.value));
     } else {
-      return _events.entries
+      events = _events.entries
           .where((event) => event.key >= day && event.key <= to)
           .fold(<CalendarEvent>[], (a, c) => a..addAll(c.value));
     }
+
+    if (visibleOnly) {
+      return events
+          .where((event) => event.groupId == null || isVisible(event.groupId!))
+          .toList();
+    } else {
+      return events;
+    }
+  }
+
+  bool isHidden(String groupId) => _hiddenGroups.contains(groupId);
+  bool isVisible(String groupId) => !isHidden(groupId);
+
+  void hide(String groupId) {
+    _hiddenGroups.add(groupId);
+    notifyListeners();
+  }
+
+  void show(String groupId) {
+    _hiddenGroups.remove(groupId);
+    notifyListeners();
+  }
+
+  void update(
+      {Map<String, AssignedCalendarEventGroup>? groups,
+      CalendarEvents? events}) {
+    if (groups != null) _groups = groups;
+    if (events != null) _events = events;
+    notifyListeners();
   }
 
   static List<String> defaultSummarize(_) => [];

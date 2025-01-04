@@ -52,9 +52,10 @@ extension CalendarDayExtension on CalendarDay {
   CalendarDay get firstDay => (year: year, month: 1, day: 1);
 
   /// Adds the specified duration and returns a new CalendarDay
-  CalendarDay add({int? days}) =>
+  CalendarDay add({int? days, int? weeks}) =>
       toUtc() // Use UTC, otherwise daylight savings will causing miscalculations
           .add(Duration(days: days ?? 0))
+          .add(Duration(days: (weeks ?? 0) * 7))
           .toCalendarDay();
 
   /// Returns the first day of the week with the specified [weekday]
@@ -75,6 +76,8 @@ extension CalendarDayExtension on CalendarDay {
   }
 
   CalendarMonth toCalendarMonth() => (year: year, month: month);
+
+  String toTitleString() => DateFormat.yMMMd().format(toLocal());
 
   CalendarDay firstDayOf(int weekday) => firstDay.toStartOfWeek(weekday);
 

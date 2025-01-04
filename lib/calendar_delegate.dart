@@ -14,6 +14,7 @@ abstract class CalendarDelegate {
   Widget buildTitle(BuildContext context, CalendarController controller,
       CalendarMonth calendar);
   Widget buildWeekday(BuildContext context, int weekday);
+  Widget? buildWeekSummaryTitle(BuildContext context) => null;
   Widget buildWeek(BuildContext context, int week);
   Widget? buildWeekSummary(BuildContext context, CalendarController controller,
           CalendarDay from, CalendarDay to, int week) =>
