@@ -20,6 +20,7 @@ class CalendarController extends ChangeNotifier {
     CalendarEvents events = const {},
     this.summarize = defaultSummarize,
     Map<String, AssignedCalendarEventGroup> groups = const {},
+    Map<String, AssignedCalendarEventGroup> preferences = const {},
     Set<String> hiddenGroups = const {},
   })  : _primary = initial,
         _secondary = initial,
@@ -31,6 +32,7 @@ class CalendarController extends ChangeNotifier {
         _navigatorVisible = navigatorVisible,
         _events = events,
         _groups = groups,
+        _preferences = preferences,
         _hiddenGroups = {...hiddenGroups};
   CalendarController.now({
     bool showWeeks = false,
@@ -41,6 +43,7 @@ class CalendarController extends ChangeNotifier {
     CalendarEvents events = const {},
     this.summarize = defaultSummarize,
     Map<String, AssignedCalendarEventGroup> groups = const {},
+    Map<String, AssignedCalendarEventGroup> preferences = const {},
     Set<String> hiddenGroups = const {},
   })  : _primary = thisMonth(),
         _secondary = thisMonth(),
@@ -52,6 +55,7 @@ class CalendarController extends ChangeNotifier {
         _navigatorVisible = navigatorVisible,
         _events = events,
         _groups = groups,
+        _preferences = preferences,
         _hiddenGroups = {...hiddenGroups};
 
   final List<String> Function(List<CalendarEvent> events) summarize;
@@ -64,7 +68,8 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
   }
 
-  late Set<String> _hiddenGroups;
+  final Set<String> _hiddenGroups;
+  final Map<String, dynamic> _preferences;
   // Set<String> get hiddenGroups => _hiddenGroups;
   // set hiddenGroups(Set<String> value) {
   //   if (value == _hiddenGroups) return;
@@ -92,7 +97,6 @@ class CalendarController extends ChangeNotifier {
   CalendarDay? _calendarDay;
   CalendarDay? get calendarDay => _calendarDay;
   set calendarDay(CalendarDay? value) {
-    //if (value == _calendarDay) return;
     _calendarDay = value;
     if (value case CalendarDay day) {
       _primary = day.toCalendarMonth();
@@ -200,6 +204,16 @@ class CalendarController extends ChangeNotifier {
 
   void show(String groupId) {
     _hiddenGroups.remove(groupId);
+    notifyListeners();
+  }
+
+  void updatePreference(String key, dynamic value) {
+    _preferences[key] = value;
+    notifyListeners();
+  }
+
+  void removePreference(String key) {
+    _preferences.remove(key);
     notifyListeners();
   }
 
