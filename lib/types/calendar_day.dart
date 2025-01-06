@@ -1,5 +1,3 @@
-import 'package:calendar_spark/types/calendar_event.dart';
-
 import 'calendar_month.dart';
 import '../date_time_extension.dart';
 import 'package:intl/intl.dart';

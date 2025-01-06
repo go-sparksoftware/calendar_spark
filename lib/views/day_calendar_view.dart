@@ -41,7 +41,7 @@ class DayCalendarView extends StatelessWidget implements CalendarViewer {
               children: [...items.map((item) => Text(item))]));
     }
 
-    Widget buildDailySlot(List<String> items) {
+    Widget buildDailySlot(List<CalendarEvent> items) {
       return buildSlot(
           leading: Column(mainAxisSize: MainAxisSize.min, children: [
             Text("${controller.calendarDay?.weekdayName}"),
@@ -53,24 +53,56 @@ class DayCalendarView extends StatelessWidget implements CalendarViewer {
           content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [...items.map((item) => Text(item))]));
+              spacing: 2,
+              children: [
+                ...items.map((item) {
+                  final group = item.groupId != null
+                      ? controller.groups[item.groupId]
+                      : null;
+                  final color = group?.color ?? Theme.of(context).primaryColor;
+                  final textColor = color.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white;
+                  return Container(
+                      decoration: ShapeDecoration(
+                          color: color,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        child: Text(item.title,
+                            style: TextStyle(color: textColor)),
+                      ));
+                })
+              ]));
     }
 
-    Widget build() => Stack(
-          clipBehavior: Clip.hardEdge,
-          children: [
-            ListView(
-              children: [
-                const ListTile(),
-                ...Iterable.generate(23, (index) => buildHourlySlot(index, [])),
-              ],
-            ),
-            Container(
-              color: backgroundColor,
-              child: buildDailySlot([]),
-            ),
-          ],
-        );
+    Widget build() {
+      final List<CalendarEvent> events = switch (controller.calendarDay) {
+        CalendarDay day => controller.getEvents(day),
+        _ => []
+      };
+
+      //final eventTitles = events.map((event) => event.title).toList();
+
+      return Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          ListView(
+            children: [
+              const ListTile(),
+              ...Iterable.generate(23, (index) => buildHourlySlot(index, [])),
+            ],
+          ),
+          Container(
+            color: backgroundColor,
+            child: buildDailySlot(events),
+          ),
+        ],
+      );
+    }
+
     return ListenableBuilder(
         listenable: controller,
         builder: (context, child) {

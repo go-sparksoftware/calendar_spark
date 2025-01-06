@@ -36,7 +36,6 @@ class MonthCalendar extends StatelessWidget {
 
     final showWeeks = controller.showWeeks;
     final showSummary = this.showSummary;
-    final tbd = showSummary ? 7 : 8;
 
     return LayoutBuilder(
       builder: (context, constraints) {

@@ -1,4 +1,3 @@
-import 'package:app_spark/material_symbols.dart';
 import 'package:calendar_spark/calendar.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +26,6 @@ class CalendarGroupList extends StatelessWidget {
             children: [
               ...controller.groups.entries.map((entry) {
                 final visible = controller.isVisible(entry.key);
-                final menuController = MenuController();
                 final menu = this.menu?.call(entry.value);
                 return ListTile(
                   leading: Checkbox(
