@@ -30,7 +30,8 @@ class CalendarGroupList extends StatelessWidget {
                 return ListTile(
                   leading: Checkbox(
                     value: visible,
-                    fillColor: WidgetStateProperty.all(entry.value.color),
+                    //fillColor: WidgetStateProperty.all(entry.value.color),
+                    fillColor: MaterialStatePropertyAll(entry.value.color),
                     onChanged: (value) {
                       value ??= false;
                       if (value) {

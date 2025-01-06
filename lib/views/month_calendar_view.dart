@@ -41,9 +41,11 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
       _eventStyle ?? Theme.of(context).textTheme.labelMedium!;
 
   Color getBorderColor(BuildContext context) =>
-      Theme.of(context).colorScheme.surfaceContainer;
+      Theme.of(context).colorScheme.surfaceVariant;
+  // Theme.of(context).colorScheme.surfaceContainer;
   Color getRowHeaderColor(BuildContext context) =>
-      Theme.of(context).colorScheme.surfaceContainerHigh;
+      Theme.of(context).colorScheme.surfaceVariant.withAlpha(128);
+  // Theme.of(context).colorScheme.surfaceContainerHigh;
 
   @override
   Widget buildDay(
@@ -61,7 +63,7 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
 
     final side = BorderSide(color: getBorderColor(context));
     final border = Border(
-      left: side,
+      left: cell.column == 0 ? BorderSide.none : side,
       bottom: side,
     );
 
@@ -134,7 +136,7 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
             child: IconButton(
                 style: background != null
                     ? ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(background))
+                        backgroundColor: MaterialStatePropertyAll(background))
                     : null,
                 iconSize: 20,
                 onPressed: null,
@@ -195,14 +197,14 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
   }
 
   @override
-  Widget buildWeekday(BuildContext context, int weekday) {
+  Widget buildWeekday(BuildContext context, int weekday, int index) {
     final template = DateTime(2024, 12, 1);
     final temp = template.add(Duration(days: weekday));
     final theme = Theme.of(context);
     final weekDayTitle = DateFormat.E().format(temp);
 
     final side = BorderSide(color: getBorderColor(context));
-    final border = Border(left: side);
+    final border = Border(left: index == 0 ? BorderSide.none : side);
     return Container(
       decoration: BoxDecoration(border: border),
       child: Center(
@@ -225,11 +227,10 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
 
   @override
   Widget buildEmptyRowHeader(BuildContext context) {
-    final side = BorderSide(color: getBorderColor(context));
-    final border = Border(left: side);
+    //final side = BorderSide(color: getBorderColor(context));
+    //final border = Border(left: side);
     return Container(
-        decoration:
-            BoxDecoration(color: getRowHeaderColor(context), border: border),
+        decoration: BoxDecoration(color: getRowHeaderColor(context)),
         width: rowHeaderWidth,
         height: headerHeight,
         child: const SizedBox());

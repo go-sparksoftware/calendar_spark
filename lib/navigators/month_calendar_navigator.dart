@@ -116,9 +116,11 @@ class NavigatorCalendarDelegate extends CalendarDelegate {
       _textStyle ?? Theme.of(context).textTheme.labelMedium;
 
   Color getBorderColor(BuildContext context) =>
-      Theme.of(context).colorScheme.surfaceContainer;
+      Theme.of(context).colorScheme.surfaceVariant;
+  // Theme.of(context).colorScheme.surfaceContainer;
   Color getRowHeaderColor(BuildContext context) =>
-      Theme.of(context).colorScheme.surfaceContainerHigh;
+      Theme.of(context).colorScheme.surfaceVariant.withAlpha(128);
+  // Theme.of(context).colorScheme.surfaceContainerHigh;
 
   @override
   Widget buildDay(
@@ -137,7 +139,7 @@ class NavigatorCalendarDelegate extends CalendarDelegate {
         child: IconButton(
             style: background != null
                 ? ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(background))
+                    backgroundColor: MaterialStatePropertyAll(background))
                 : null,
             onPressed: () {
               controller.calendarDay = calendar;
@@ -180,7 +182,7 @@ class NavigatorCalendarDelegate extends CalendarDelegate {
   }
 
   @override
-  Widget buildWeekday(BuildContext context, int weekday) {
+  Widget buildWeekday(BuildContext context, int weekday, int index) {
     // Using a random date where the 1st day is a Sunday
     final date = DateTime(2024, 12, 1).add(Duration(days: weekday));
     final weekDayTitle = DateFormat.E().format(date);

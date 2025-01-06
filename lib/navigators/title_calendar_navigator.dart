@@ -64,7 +64,8 @@ class TitleCalendarNavigator extends StatelessWidget
             icon: controller.navigatorVisible
                 ? const Icon(MaterialSymbols.arrowDropDown)
                 : const Icon(MaterialSymbols.arrowDropUp),
-            iconAlignment: IconAlignment.end,
+            // iconAlignment: IconAlignment.end,
+
             label: Text(calendar.monthYearName,
                 style: Theme.of(context).textTheme.titleLarge),
           ),

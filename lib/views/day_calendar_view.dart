@@ -21,7 +21,8 @@ class DayCalendarView extends StatelessWidget implements CalendarViewer {
   @override
   Widget build(BuildContext context) {
     final dividerColor =
-        this.dividerColor ?? Theme.of(context).colorScheme.surfaceContainerLow;
+        this.dividerColor ?? Theme.of(context).colorScheme.surface;
+    // this.dividerColor ?? Theme.of(context).colorScheme.surfaceContainerLow;
 
     Widget buildSlot({required Widget leading, required Widget content}) {
       return ListTile(
@@ -53,16 +54,18 @@ class DayCalendarView extends StatelessWidget implements CalendarViewer {
           content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              spacing: 2,
+              // spacing: 2,
               children: [
                 ...items.map((item) {
                   final group = item.groupId != null
                       ? controller.groups[item.groupId]
                       : null;
                   final color = group?.color ?? Theme.of(context).primaryColor;
-                  final textColor = color.computeLuminance() > 0.5
-                      ? Colors.black
-                      : Colors.white;
+                  final textColor =
+                      ThemeData.estimateBrightnessForColor(color) ==
+                              Brightness.light
+                          ? Colors.black
+                          : Colors.white;
                   return Container(
                       decoration: ShapeDecoration(
                           color: color,

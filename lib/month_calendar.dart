@@ -76,7 +76,8 @@ class MonthCalendar extends StatelessWidget {
                       return ConstrainedBox(
                           constraints: BoxConstraints.tightFor(
                               width: cellWidth, height: delegate.headerHeight),
-                          child: delegate.buildWeekday(context, dayOfWeek));
+                          child:
+                              delegate.buildWeekday(context, dayOfWeek, index));
                     }),
                     if (showSummary)
                       SizedBox(
