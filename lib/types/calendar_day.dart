@@ -1,3 +1,8 @@
+import 'package:app_spark/int_extension.dart';
+import 'package:calendar_spark/calendar.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
 import 'calendar_month.dart';
 import '../date_time_extension.dart';
 import 'package:intl/intl.dart';
@@ -49,6 +54,9 @@ extension CalendarDayExtension on CalendarDay {
   /// Returns the first day of the year
   CalendarDay get firstDay => (year: year, month: 1, day: 1);
 
+  /// Returns the last day of the year
+  CalendarDay get lastDay => (year: year, month: 12, day: 31);
+
   /// Adds the specified duration and returns a new CalendarDay
   CalendarDay add({int? days, int? weeks}) =>
       toUtc() // Use UTC, otherwise daylight savings will causing miscalculations
@@ -76,6 +84,8 @@ extension CalendarDayExtension on CalendarDay {
   CalendarMonth toCalendarMonth() => (year: year, month: month);
 
   String toTitleString() => DateFormat.yMMMd().format(toLocal());
+
+  String toDateTimeString() => "$year-${month.padded}-${day.padded}";
 
   CalendarDay firstDayOf(int weekday) => firstDay.toStartOfWeek(weekday);
 
@@ -119,3 +129,35 @@ extension CalendarDayTupleExtension on (int, int, int) {
 }
 
 CalendarDay today() => DateTime.now().toCalendarDay();
+
+class CalendarDayController extends TextEditingController {
+  CalendarDayController({CalendarDay? day})
+      : _day = day,
+        super(text: day?.toDateTimeString());
+
+  CalendarDay? _day;
+  CalendarDay? get day => _day;
+  set day(CalendarDay? value) {
+    if (value == _day) return;
+    _day = value;
+    notifyListeners();
+  }
+
+  DateTime? get localDate => day?.toLocal();
+
+  @override
+  String get text => _current ?? day?.toDateTimeString() ?? "";
+
+  @override
+  set text(String value) {
+    if (DateTime.tryParse(value) case DateTime date) {
+      _current = null;
+      day = date.toCalendarDay();
+    } else {
+      _current = value;
+      day = null;
+    }
+  }
+
+  String? _current;
+}
