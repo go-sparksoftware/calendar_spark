@@ -97,30 +97,54 @@ class MonthCalendarViewDelegate extends CalendarDelegate {
           ...event.subtitles
         ];
       }
-
+      const padding = 16.0;
       return Padding(
-        padding: const EdgeInsets.only(top: 4, left: 4),
+        padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (line1 != null)
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  CircleAvatar(
+              Row(children: [
+                SizedBox(
+                  width: padding,
+                  child: CircleAvatar(
                     radius: 4,
                     backgroundColor: indicatorColor,
                   ),
-                  const SizedBox(width: 4),
-                  ...line1
-                      .split(" ")
-                      .map((word) => Text(" $word", style: eventTitleStyle)),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: Text(line1,
+                      softWrap: false,
+                      overflow: TextOverflow.clip,
+                      style: eventTitleStyle),
+                ),
+              ]),
             ...sublines.map((line) => Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Text(line, style: eventTitleStyle),
-                )),
+                  padding: const EdgeInsets.only(left: padding),
+                  child: Text(line,
+                      softWrap: false,
+                      overflow: TextOverflow.clip,
+                      style: eventTitleStyle),
+                ))
+
+            // if (line1 != null)
+            //   Wrap(
+            //     crossAxisAlignment: WrapCrossAlignment.center,
+            //     children: [
+            //       CircleAvatar(
+            //         radius: 4,
+            //         backgroundColor: indicatorColor,
+            //       ),
+            //       const SizedBox(width: 4),
+            //       ...line1
+            //           .split(" ")
+            //           .map((word) => Text(" $word", style: eventTitleStyle)),
+            //     ],
+            //   ),
+            // ...sublines.map((line) => Padding(
+            //       padding: const EdgeInsets.only(left: 16),
+            //       child: Text(line, style: eventTitleStyle),
+            //     )),
           ],
         ),
       );
